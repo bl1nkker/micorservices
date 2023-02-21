@@ -1,16 +1,10 @@
-import psycopg2
+from sqlalchemy.engine import Connection
+from sqlalchemy import text
 
 from transaction import Transaction
 
-conn = psycopg2.connect(
-    host="test.dsacademy.kz",
-    database="fortesting",
-    user="testing",
-    password="testing123"
-)
 
-
-def create_table():
+def create_table(conn: Connection):
     query = """
     CREATE TABLE IF NOT EXISTS transactions (
         id SERIAL PRIMARY KEY,
@@ -23,40 +17,45 @@ def create_table():
         )
     """
 
-    cursor = conn.cursor()
-    cursor.execute(query)
+    conn.execute(text(query))
     conn.commit()
 
 
-def insert_transaction(transaction: Transaction):
+def insert_transaction(conn: Connection, transaction: Transaction):
     query = """
     INSERT INTO transactions (description, price, quantity, amount)
-    VALUES (%s, %s, %s, %s)
+    VALUES (:description, :price, :quantity, :amount);
     """
 
-    cursor = conn.cursor()
-    cursor.execute(query, (transaction.description, transaction.price, transaction.quantity, transaction.amount))
+    conn.execute(
+        text(query),
+        parameters={
+            "description": transaction.description,
+            "price": transaction.price,
+            "quantity": transaction.quantity,
+            "amount": transaction.amount,
+        },
+    )
     conn.commit()
 
 
-def update_transactions():
+def update_transactions(conn: Connection):
     query = "UPDATE transactions SET amount=price*quantity, status='calculated' WHERE status='new';"
-    cursor = conn.cursor()
-    cursor.execute(query)
+    conn.execute(text(query))
     conn.commit()
 
 
-def complete_transactions():
+def complete_transactions(conn: Connection):
     query = "UPDATE transactions SET status='completed' WHERE status='calculated';"
-    cursor = conn.cursor()
-    cursor.execute(query)
+    conn.execute(text(query))
     conn.commit()
 
 
-def get_transactions() -> list[Transaction]:
+def get_transactions(conn: Connection) -> list[Transaction]:
     query = "SELECT * FROM transactions;"
-    cursor = conn.cursor()
-    cursor.execute(query)
+    print("ddd")
+    transactions = conn.execute(text(query)).fetchall()
+    print("ddd1")
     return [Transaction(
         id=transaction[0],
         description=transaction[1],
@@ -65,4 +64,4 @@ def get_transactions() -> list[Transaction]:
         amount=transaction[4],
         created=transaction[5],
         status=transaction[6],
-    ) for transaction in cursor.fetchall()]
+    ) for transaction in transactions]

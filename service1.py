@@ -1,13 +1,16 @@
 import time
 import random
+
 from sql_queries import create_table, insert_transaction
 from transaction import Transaction
+from credentials import conn
 
-create_table()
+create_table(conn)
 
 if __name__ == '__main__':
     while True:
         insert_transaction(
+            conn,
             Transaction(
                 description=random.choice(["apple", "banana", "orange"]),
                 price=random.randint(1, 100),
@@ -16,4 +19,4 @@ if __name__ == '__main__':
             )
         )
         print("Inserted")
-        time.sleep(10)
+        time.sleep(1)
