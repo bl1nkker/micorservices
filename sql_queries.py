@@ -6,7 +6,7 @@ from transaction import Transaction
 
 def create_table(conn: Connection):
     query = """
-    CREATE TABLE IF NOT EXISTS transactions (
+        CREATE TABLE IF NOT EXISTS transactions (
         id SERIAL PRIMARY KEY,
         description VARCHAR(255) NOT NULL,
         price INTEGER NOT NULL,
@@ -14,9 +14,8 @@ def create_table(conn: Connection):
         amount INTEGER,
         created DATE DEFAULT NOW(),
         status VARCHAR(255) DEFAULT 'new'
-        )
+        );
     """
-
     conn.execute(text(query))
     conn.commit()
 
@@ -53,9 +52,7 @@ def complete_transactions(conn: Connection):
 
 def get_transactions(conn: Connection) -> list[Transaction]:
     query = "SELECT * FROM transactions;"
-    print("ddd")
     transactions = conn.execute(text(query)).fetchall()
-    print("ddd1")
     return [Transaction(
         id=transaction[0],
         description=transaction[1],
