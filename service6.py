@@ -1,11 +1,12 @@
 import telebot
-
+import os
 
 bot = telebot.TeleBot('6109199376:AAFvDq_SPBjg2pXyr9EXZAKF-XqrzuKHTJk')
+file_path = os.path.join(os.path.dirname(__file__), 'subscribers.txt')
 
 
 def send_message(message):
-    with open('subscribers.txt') as f:
+    with open(file_path) as f:
         subscribers = f.read().splitlines()
     for subscriber in subscribers:
         bot.send_message(chat_id=subscriber, text=message)
@@ -15,7 +16,7 @@ def send_message(message):
 def handle_message(message):
     user_message = message.text.lower()
     if user_message == 'subscribe':
-        with open('subscribers.txt', 'a') as f:
+        with open(file_path, 'a') as f:
             f.write(f'{message.chat.id}\n')
         bot.send_message(
             message.chat.id, "You have been subscribed! Be ready to receive some spam!")
