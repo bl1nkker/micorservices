@@ -3,6 +3,8 @@
 
 name: Python application
 
+
+
 on:
   push:
     branches: [ "main" ]
@@ -43,6 +45,5 @@ jobs:
           supervisorctl restart service4
           supervisorctl restart service5
           supervisorctl restart service6
-    - name: Test with pytest
-      run: |
-        pytest
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
